@@ -21,6 +21,7 @@ struct ContentView: View {
                 Text("No controller connected")
                     .foregroundColor(.secondary)
             }
+            Button(action: { let _ = print("Button clicked") }, label: {Text("Click me")})
         }
         .padding()
         .onAppear {
