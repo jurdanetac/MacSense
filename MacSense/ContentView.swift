@@ -12,16 +12,14 @@ struct ContentView: View {
     @State private var controllerManager = GameControllerManager()
     
     var body: some View {
-        let controllers = controllerManager.connectedControllers;
+        let controller: GCController? = controllerManager.controller;
         
         VStack {
-            if controllers.isEmpty {
-                Text("No controllers connected")
-                    .foregroundColor(.secondary)
+            if let c = controller {
+                Text(c.vendorName!)
             } else {
-                ForEach(controllers, id: \.self) { gc in
-                    Text(gc.vendorName!)
-                }
+                Text("No controller connected")
+                    .foregroundColor(.secondary)
             }
         }
         .padding()

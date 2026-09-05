@@ -12,13 +12,9 @@ class GameControllerManager {
     // Notification observers for controller connection events.
     private var observers: [NSObjectProtocol] = []
     
-    // The connected controllers, if any.
-    var connectedControllers: [GCController] = []
+    var controller: GCController?
 
     func startMonitoring() {
-        // Get the controllers that were connected before the app launched.
-        connectedControllers = GCController.controllers()
-        
         // The framework posts a connection notification when a controller connects.
         let connectObserver = NotificationCenter.default.addObserver(
             forName: .GCControllerDidConnect,
@@ -48,10 +44,29 @@ class GameControllerManager {
     }
     
     private func handleControllerConnected(_ controller: GCController) {
-        connectedControllers.append(controller)
+        
+        let buttonsActions = [
+            "Cross Button": { print("x pressed") }
+        ]
+        
+       controller.input.inputStateAvailableHandler = { (input) in
+           input.buttons.forEach({ button in
+               button.pressedInput.pressedDidChangeHandler = { (prev, current, pressed) in
+                   if pressed {
+                       // Handle when the user presses the button.
+                       let fn = buttonsActions.first { $0.key == button.localizedName }!.value
+                       fn()
+                   } else {
+                       // Handle when the user releases the button.
+                   }
+               }
+           })
+       }
+        
+       self.controller = controller
     }
     
     private func handleControllerDisconnected(_ controller: GCController) {
-        connectedControllers.removeAll { $0 == controller }
+        self.controller = nil
     }
 }
