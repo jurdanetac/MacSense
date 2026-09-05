@@ -6,16 +6,28 @@
 //
 
 import SwiftUI
+import GameController
 
 struct ContentView: View {
+    @State private var controllerManager = GameControllerManager()
+    
     var body: some View {
+        let controllers = controllerManager.connectedControllers;
+        
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            if controllers.isEmpty {
+                Text("No controllers connected")
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(controllers, id: \.self) { gc in
+                    Text(gc.vendorName!)
+                }
+            }
         }
         .padding()
+        .onAppear {
+            controllerManager.startMonitoring();
+        }
     }
 }
 
